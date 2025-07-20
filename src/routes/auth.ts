@@ -1,10 +1,8 @@
-import { Request, Router } from 'express';
+import { Router } from 'express';
 import { AuthController } from '../controllers/authController';
 import { authenticateToken } from '../middlewares/auth';
-import { requireRole } from '../middlewares/requireRole';
-import { uploadFiles } from '../controllers/fileController';
-import { createUploader } from '../middlewares/multerUploader';
-import { ForgotController } from '../controllers/forgotController';
+import { PasswordController } from '../controllers/passwordController';
+import { strictRateLimit } from '../middlewares/rateLimit';
 declare global {
     namespace Express {
         interface Request {
@@ -14,20 +12,11 @@ declare global {
 }
 const router = Router();
 
-// Public routes
+
 router.post('/register', AuthController.register);
 router.post('/login', AuthController.login);
 router.post('/refresh', AuthController.refreshToken);
-
-// Private routes
-router.get('/profile', authenticateToken, requireRole('admin'), AuthController.getProfile);
-router.put('/profile', authenticateToken, AuthController.updateProfile);
-// router.put('/profile', authenticateToken, AuthController.updateProfile,createUploader(), uploadFiles);
-router.post("/forgot-password", ForgotController.takeEmail)
-router.put('/change-password', authenticateToken, AuthController.changePassword);
-// router.post('/upload', (req: Request, res: Express.Response, next: Function) => {
-//     req.uploadFolder = 'uploads';
-//     next();
-// }, createUploader(), uploadFiles);
+router.post("/forgot-password", strictRateLimit, PasswordController.takeEmail)
+router.put('/change-password', authenticateToken, strictRateLimit, PasswordController.changePassword);
 
 export default router;

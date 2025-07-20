@@ -1,0 +1,1 @@
+export const toManyAttempts="Too many profile update attempts from this IP, please try again after 15 minutes."
