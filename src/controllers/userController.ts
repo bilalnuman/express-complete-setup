@@ -5,6 +5,7 @@ import { sendResponse } from '../utils/apiResponse';
 import { StatusCodes } from 'http-status-codes';
 import { profileUpdateSchema } from '../validationSchemas/profileSchema';
 import { validateSchema } from '../helpers/validateSchema';
+import { fileSchema } from '../validationSchemas/fileSchema';
 
 export class UserController {
 
@@ -77,10 +78,61 @@ export class UserController {
         });
     });
 
-    static updatePicture = asyncHandler(async (req: Request, res: Response, next: Function) => {
-        req.uploadFolder = 'uploads';
+    static setUploadFolder = (req: Request, res: Response, next: Function) => {
+        req.uploadFolder = 'uploads/profile-pictures';
         next();
-        console.log(req)
-    }
-    )
+    };
+
+    static updatePicture = asyncHandler(async (req: Request, res: Response) => {
+        const userId = (req as any).userId;
+        const data = validateSchema(fileSchema, req.file, res);
+        if (!data) return;
+        const file = req.file as Express.Multer.File;
+        // if (!data) {
+        //     return sendResponse({
+        //         res,
+        //         statusCode: StatusCodes.BAD_REQUEST,
+        //         success: false,
+        //         message: 'No profile picture file uploaded',
+        //     });
+        // }
+
+        // const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        // if (!allowedMimeTypes.includes(file.mimetype)) {
+        //     return sendResponse({
+        //         res,
+        //         statusCode: StatusCodes.BAD_REQUEST,
+        //         success: false,
+        //         message: 'Invalid file type. Only JPEG, PNG, and GIF images are allowed',
+        //     });
+        // }
+
+        const profilePicturePath = file.path || `uploads/${file.filename}`;
+
+        const updatedUser = await UserModel.update(userId, {
+            profilePicture: profilePicturePath,
+        });
+
+        if (!updatedUser) {
+            return sendResponse({
+                res,
+                statusCode: StatusCodes.NOT_FOUND,
+                success: false,
+                message: 'User not found',
+            });
+        }
+
+        const { password: _, ...userWithoutPassword } = updatedUser;
+
+        return sendResponse({
+            res,
+            statusCode: StatusCodes.OK,
+            success: true,
+            message: 'Profile picture updated successfully',
+            data: {
+                user: userWithoutPassword,
+                profilePicture: profilePicturePath
+            },
+        });
+    })
 }
