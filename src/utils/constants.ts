@@ -1,0 +1,1 @@
+export type UserRole = 'bilal11'|'admin' | 'user' | 'moderator';
