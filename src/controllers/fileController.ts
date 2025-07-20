@@ -17,7 +17,7 @@ const fileSchema = z.object({
 
 export const uploadFiles = (req: Request, res: Response) => {
     try {
-        const files = req.files as Express.Multer.File[];
+        const files = req.files ? req.files as Express.Multer.File[] : [req.file as Express.Multer.File];
 
         if (!files || files.length === 0) {
             return res.status(400).json({

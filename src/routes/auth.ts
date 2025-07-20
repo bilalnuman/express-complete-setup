@@ -7,7 +7,7 @@ import { createUploader } from '../middlewares/multerUploader';
 declare global {
     namespace Express {
         interface Request {
-            uploadFolder?:string;
+            uploadFolder?: string;
         }
     }
 }
@@ -22,9 +22,9 @@ router.post('/refresh', AuthController.refreshToken);
 router.get('/profile', authenticateToken, requireRole('admin'), AuthController.getProfile);
 router.put('/profile', authenticateToken, AuthController.updateProfile);
 router.put('/change-password', authenticateToken, AuthController.changePassword);
-router.post('/upload', (req:Request, res:Express.Response, next:Function) => {
+router.post('/upload', (req: Request, res: Express.Response, next: Function) => {
     req.uploadFolder = 'uploads';
     next();
-}, createUploader(true), uploadFiles);
+}, createUploader(), uploadFiles);
 
 export default router;
