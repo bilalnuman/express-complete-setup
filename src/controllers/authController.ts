@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { UserModel } from '../models/User';
-import { registerSchema } from '../utils/authSchema';
+import { profileUpdateSchema, registerSchema, resetPasswordSchema } from '../utils/authSchema';
 import { asyncHandler } from '../utils/asyncHandler';
 import { sendResponse } from '../utils/apiResponse';
 import { StatusCodes } from 'http-status-codes';
@@ -149,18 +149,31 @@ export class AuthController {
     });
   });
 
-  static updateProfile = asyncHandler(async (req: Request, res: Response) => {
-    const userId = (req as any).userId;
-    const { firstName, lastName, email, username } = req.body;
+  static updateProfile = asyncHandler(async (req: Request, res: Response, next: Function) => {
 
-    if (email || username) {
+    const parsed = profileUpdateSchema.safeParse(req.body);
+    const userId = (req as any).userId;
+
+    if (!parsed.success) {
+      return sendResponse({
+        res,
+        statusCode: StatusCodes.BAD_REQUEST,
+        success: false,
+        message: 'Validation failed',
+        errors: parsed.error.flatten().fieldErrors,
+      });
+    }
+
+    const { firstName, lastName, email, username } = parsed.data;
+    if (parsed.success) {
       const existingUser = await UserModel.findByEmailOrUsername(email || username);
       if (existingUser && existingUser.id !== userId) {
         return sendResponse({
           res,
           statusCode: StatusCodes.BAD_REQUEST,
           success: false,
-          message: 'Email or username is already taken',
+          message: 'Validation failed',
+          errors: "Acount with this email or username not exists",
         });
       }
     }
@@ -168,8 +181,6 @@ export class AuthController {
     const updatedUser = await UserModel.update(userId, {
       firstName,
       lastName,
-      email,
-      username,
     });
 
     if (!updatedUser) {
@@ -194,16 +205,19 @@ export class AuthController {
 
   static changePassword = asyncHandler(async (req: Request, res: Response) => {
     const userId = (req as any).userId;
-    const { currentPassword, newPassword } = req.body;
+    const parsed = resetPasswordSchema.safeParse(req.body);
 
-    if (!currentPassword || !newPassword) {
+
+    if (!parsed.success) {
       return sendResponse({
         res,
         statusCode: StatusCodes.BAD_REQUEST,
         success: false,
-        message: 'Current password and new password are required',
+        message: 'Validation failed',
+        errors: parsed.error.flatten().fieldErrors,
       });
     }
+
 
     const user = await UserModel.findById(userId);
     if (!user) {
@@ -214,7 +228,7 @@ export class AuthController {
         message: 'User not found',
       });
     }
-
+    const { currentPassword, newPassword } = parsed.data;
     const isCurrentPasswordValid = await UserModel.verifyPassword(currentPassword, user.password);
     if (!isCurrentPasswordValid) {
       return sendResponse({
