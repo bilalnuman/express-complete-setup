@@ -4,6 +4,7 @@ import { authenticateToken } from '../middlewares/auth';
 import { requireRole } from '../middlewares/requireRole';
 import { uploadFiles } from '../controllers/fileController';
 import { createUploader } from '../middlewares/multerUploader';
+import { ForgotController } from '../controllers/forgotController';
 declare global {
     namespace Express {
         interface Request {
@@ -22,6 +23,7 @@ router.post('/refresh', AuthController.refreshToken);
 router.get('/profile', authenticateToken, requireRole('admin'), AuthController.getProfile);
 router.put('/profile', authenticateToken, AuthController.updateProfile);
 // router.put('/profile', authenticateToken, AuthController.updateProfile,createUploader(), uploadFiles);
+router.post("/forgot-password", ForgotController.takeEmail)
 router.put('/change-password', authenticateToken, AuthController.changePassword);
 // router.post('/upload', (req: Request, res: Express.Response, next: Function) => {
 //     req.uploadFolder = 'uploads';
