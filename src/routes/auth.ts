@@ -1,4 +1,4 @@
-import { Request, Router } from 'express';
+import { Router } from 'express';
 import { AuthController } from '../controllers/authController';
 import { authenticateToken } from '../middlewares/auth';
 import { requireRole } from '../middlewares/requireRole';
@@ -13,7 +13,7 @@ declare global {
 }
 const router = Router();
 
-// Public routes
+
 router.post('/register', AuthController.register);
 router.post('/login', AuthController.login);
 router.post('/refresh', AuthController.refreshToken);

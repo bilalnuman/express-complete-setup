@@ -7,6 +7,7 @@ export const users = pgTable('users', {
   password: text('password').notNull(),
   firstName: varchar('first_name', { length: 100 }),
   lastName: varchar('last_name', { length: 100 }),
+  profilePicture: varchar('profile_picture', { length: 255 }),
   isActive: boolean('is_active').notNull().default(true),
   isVerified: boolean('is_verified').notNull().default(false),
   verificationToken: text('verification_token'),
