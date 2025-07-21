@@ -4,7 +4,6 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth';
-import userRoutes from './routes/users';
 import { errorHandler } from './middlewares/errorHandler';
 dotenv.config();
 
@@ -58,7 +57,6 @@ app.get('/api/v1/', (req, res) => {
 
 // Api routes
 app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/users', userRoutes);
 
 
 // If no route match then this action will be execute

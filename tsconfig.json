@@ -9,10 +9,7 @@
         "strict": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "typeRoots": [
-            "./node_modules/@types",
-            "./src/types"
-        ],
+        "typeRoots": ["./node_modules/@types", "./src/types"],
         "resolveJsonModule": true,
         "declaration": true,
         "declarationMap": true,
@@ -20,8 +17,7 @@
     },
     "include": [
         "src/**/*",
-        "drizzle.config.ts",
-        "src/validationSchemas/.ts"
+        "drizzle.config.ts"
     ],
     "exclude": [
         "node_modules",

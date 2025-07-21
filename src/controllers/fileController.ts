@@ -2,7 +2,18 @@ import { Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { fileSchema } from '../validationSchemas/fileSchema';
+import { z } from 'zod';
+
+
+const fileSchema = z.object({
+    originalname: z.string().min(1, 'File name is required'),
+    mimetype: z.string().refine(
+        val => ['image/png', 'image/jpeg', 'application/pdf'].includes(val),
+        { message: 'Only PNG, JPEG, and PDF files are allowed' }
+    ),
+    size: z.number().max(5 * 100 * 1024, 'Maximum file size is 5MB'),
+    buffer: z.instanceof(Buffer),
+});
 
 export const uploadFiles = (req: Request, res: Response) => {
     try {
