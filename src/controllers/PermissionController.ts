@@ -1,25 +1,25 @@
-
 import { Request, Response } from 'express';
-import { RoleModel } from '../models/Role';
 import z from 'zod';
 import { validateSchema } from '../helpers/validateSchema';
 import { sendBadResponse } from '../helpers/sendBadResponse';
 import { sendResponse } from '../utils/apiResponse';
 import { StatusCodes } from 'http-status-codes';
-const roleSchema = z.object({
-  role: z.enum(["admin", "teacher", "parent", "student"]),
+import { PermissionModel } from '../models/Permission';
+const permissionSchema = z.object({
+  name: z.enum(['create', 'read', 'update', 'delete'],"Valid permission type 'create', 'read', 'update', 'delete'"),
   description: z.string().optional()
-})
-class RoleController {
+});
+
+class PermissionController {
   public async index(req: Request, res: Response) {
     try {
-      const roles = await RoleModel.getAll();
+      const permissions = await PermissionModel.getAll();
       return sendResponse({
         res,
         statusCode: StatusCodes.OK,
         success: true,
-        message: 'Roles retrieved successfully',
-        data: roles,
+        message: 'Permissions retrieved successfully',
+        data: permissions,
       })
     } catch (error) {
       return sendBadResponse(res, error);
@@ -29,16 +29,16 @@ class RoleController {
   public async show(req: Request, res: Response) {
     try {
       const id = req.params.id;
-      const role = await RoleModel.getOne(Number(id));
-      if (!role) {
-        return sendBadResponse(res, {}, `Role of id ${id} not found`, StatusCodes.NOT_FOUND);
+      const permission = await PermissionModel.getOne(Number(id));
+      if (!permission) {
+        return sendBadResponse(res, {}, `Permission of id ${id} not found`, StatusCodes.NOT_FOUND);
       }
       return sendResponse({
         res,
         statusCode: StatusCodes.OK,
         success: true,
-        message: 'Role retrieved successfully',
-        data: role,
+        message: 'Permission retrieved successfully',
+        data: permission,
       })
     } catch (error) {
       return sendBadResponse(res, error);
@@ -46,13 +46,12 @@ class RoleController {
   }
 
   public async create(req: Request, res: Response): Promise<Response | undefined> {
-    const data = validateSchema(roleSchema, req.body, res);
+    const data = validateSchema(permissionSchema, req.body, res);
     if (!data) return;
 
     try {
-      // const { role } = data;
 
-      const roleCreated = await RoleModel.create({
+      const permissionCreated = await PermissionModel.create({
         ...data
       });
 
@@ -60,14 +59,14 @@ class RoleController {
         res,
         statusCode: StatusCodes.CREATED,
         success: true,
-        message: 'Role successfully assigned',
-        data: roleCreated,
+        message: 'Permission successfully assigned',
+        data: permissionCreated,
       });
     } catch (error: any) {
       if (error.cause.code === '23505') {
-        return sendBadResponse(res, {}, `Role "${req.body.role}" already exists`);
+        return sendBadResponse(res, {}, `Permission "${req.body.name}" already exists`);
       }
-      console.error('Unhandled Role Create Error:', error);
+      console.error('Unhandled permission Create Error:', error);
       return sendBadResponse(res, {}, error?.cause);
     }
 
@@ -75,20 +74,20 @@ class RoleController {
 
   public async update(req: Request, res: Response): Promise<any> {
     try {
-      const roleUpdateSchema = roleSchema.omit({ role: true });
+      const permissionUpdateSchema = permissionSchema.omit({ name: true });
 
-      const data = validateSchema(roleUpdateSchema, req.body, res);
+      const data = validateSchema(permissionUpdateSchema, req.body, res);
 
       if (!data) return;
-      const updated = await RoleModel.update(Number(req.params.id), data);
+      const updated = await PermissionModel.update(Number(req.params.id), data);
       if (!updated) {
-        return sendBadResponse(res, {}, `Role of id ${req.params.id} not found`, StatusCodes.NOT_FOUND);
+        return sendBadResponse(res, {}, `Permission of id ${req.params.id} not found`, StatusCodes.NOT_FOUND);
       }
       return sendResponse({
         res,
         statusCode: StatusCodes.OK,
         success: true,
-        message: 'Role successfully updated',
+        message: 'Permission successfully updated',
         data: updated,
       });
 
@@ -100,15 +99,15 @@ class RoleController {
 
   public async delete(req: Request, res: Response): Promise<Response> {
     try {
-      const deleted = await RoleModel.delete(Number(req.params.id));
+      const deleted = await PermissionModel.delete(Number(req.params.id));
       if (!deleted) {
-        return sendBadResponse(res, {}, `Role of id ${req.params.id} not found`, StatusCodes.NOT_FOUND);
+        return sendBadResponse(res, {}, `Permission of id ${req.params.id} not found`, StatusCodes.NOT_FOUND);
       }
       return sendResponse({
         res,
         statusCode: StatusCodes.OK,
         success: true,
-        message: 'Role successfully deleted',
+        message: 'Permission successfully deleted',
       });
     } catch (error) {
       return sendBadResponse(res, error);
@@ -116,4 +115,5 @@ class RoleController {
   }
 }
 
-export default new RoleController();
+export default new PermissionController();
+

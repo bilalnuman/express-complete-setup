@@ -1,1 +1,0 @@
-ALTER TABLE "roles" ADD CONSTRAINT "roles_role_unique" UNIQUE("role");

@@ -5,43 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1752938168819,
-      "tag": "0000_dear_radioactive_man",
+      "when": 1753309543397,
+      "tag": "0000_huge_menace",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1753292022436,
-      "tag": "0001_material_greymalkin",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1753292665613,
-      "tag": "0002_mute_tony_stark",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1753298935453,
-      "tag": "0003_perfect_fenris",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1753300945960,
-      "tag": "0004_brave_xorn",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1753301230304,
-      "tag": "0005_late_enchantress",
+      "when": 1753310273986,
+      "tag": "0001_unique_princess_powerful",
       "breakpoints": true
     }
   ]
