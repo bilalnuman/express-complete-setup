@@ -19,10 +19,10 @@ router.post('/login', AuthController.login);
 router.post('/refresh', AuthController.refreshToken);
 
 // Private routes
-router.get('/profile', authenticateToken, requireRole('admin'), AuthController.getProfile);
-router.put('/profile', authenticateToken, AuthController.updateProfile);
+// router.get('/profile', authenticateToken, requireRole('admin'), AuthController.getProfile);
+// router.put('/profile', authenticateToken, AuthController.updateProfile);
 // router.put('/profile', authenticateToken, AuthController.updateProfile,createUploader(), uploadFiles);
-router.put('/change-password', authenticateToken, AuthController.changePassword);
+// router.put('/change-password', authenticateToken, AuthController.changePassword);
 router.post('/upload', (req: Request, res: Express.Response, next: Function) => {
     req.uploadFolder = 'uploads';
     next();

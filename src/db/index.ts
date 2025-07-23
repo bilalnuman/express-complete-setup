@@ -1,3 +1,4 @@
+// db/index.ts
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import * as dotenv from 'dotenv';
@@ -11,7 +12,6 @@ const pool = new Pool({
 
 export const db = drizzle(pool, { schema });
 
-// Test database connection
 export async function connectDB() {
   try {
     await pool.connect();

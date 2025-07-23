@@ -11,6 +11,9 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "c": "node commands/generateController.js",
+    "r": "node commands/generateRoute.js",
+    "help": "node help.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Bilal",
@@ -21,6 +24,7 @@
     "dotenv": "^17.2.0",
     "drizzle-orm": "^0.44.3",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
     "helmet": "^8.1.0",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",

@@ -3,8 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import authRoutes from './routes/auth';
 import { errorHandler } from './middlewares/errorHandler';
+import { authRoutes, roleRoutes, userRoutes } from './routes';
 dotenv.config();
 
 const app = express();
@@ -57,6 +57,8 @@ app.get('/api/v1/', (req, res) => {
 
 // Api routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/role', roleRoutes);
 
 
 // If no route match then this action will be execute

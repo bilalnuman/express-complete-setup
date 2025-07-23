@@ -2,28 +2,22 @@ import { Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { z } from 'zod';
-
-
-const fileSchema = z.object({
-    originalname: z.string().min(1, 'File name is required'),
-    mimetype: z.string().refine(
-        val => ['image/png', 'image/jpeg', 'application/pdf'].includes(val),
-        { message: 'Only PNG, JPEG, and PDF files are allowed' }
-    ),
-    size: z.number().max(5 * 100 * 1024, 'Maximum file size is 5MB'),
-    buffer: z.instanceof(Buffer),
-});
+import { fileSchema } from '../validationSchemas/fileSchema';
+import { StatusCodes } from 'http-status-codes';
 
 export const uploadFiles = (req: Request, res: Response) => {
+    let apiRes: any = null
+    let files
+    let file
     try {
-        const files = req.files ? req.files as Express.Multer.File[] : [req.file as Express.Multer.File];
-
+        files = req.files ? req.files as Express.Multer.File[] : [req.file as Express.Multer.File];
         if (!files || files.length === 0) {
-            return res.status(400).json({
+
+            apiRes = {
                 success: false,
-                message: 'No files uploaded, please select at least one file',
-            });
+                message: 'No files uploaded, please select at least one files',
+                statusCode: StatusCodes.BAD_REQUEST,
+            }
         }
 
         const folder = req.uploadFolder || 'uploads';
@@ -78,16 +72,20 @@ export const uploadFiles = (req: Request, res: Response) => {
             result.status === 'uploaded' || result.status === 'already exists'
         );
 
-        return res.status(hasSuccess ? 201 : 400).json({
+        apiRes = {
             success: hasSuccess,
             message: 'Files processed',
-            files: uploadedResults,
-        });
+            files: files.length > 1 ? uploadedResults : uploadedResults[0],
+            statusCode: uploadedResults[0].status === "already exists" ? StatusCodes.CONFLICT : StatusCodes.OK,
+        }
     } catch (err) {
-        return res.status(500).json({
+        apiRes = {
             success: false,
-            message: 'Upload failed',
+            message: files ? "No files uploaded, please select at least one file" : 'Upload failed',
             error: err,
-        });
+            statusCode: StatusCodes.BAD_REQUEST,
+        }
     }
+
+    return apiRes
 };

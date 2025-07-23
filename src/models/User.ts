@@ -1,55 +1,51 @@
-import bcrypt from 'bcryptjs';
-import { eq, or } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { db } from '../db';
-import { users, User, NewUser } from '../db/schema';
+
 import { JwtService } from '../services/JwtService';
+import { users } from '../db/migrations/users';
+import { NewUser, User } from '../db/schema';
 
 export class UserModel {
-  // 🔐 Password Hashing
+  
   static async hashPassword(password: string): Promise<string> {
-    return await JwtService.hashPassword(password)
+    return await JwtService.hashPassword(password);
   }
 
   static async verifyPassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    return await JwtService.verifyPassword(plainPassword, hashedPassword)
+    return await JwtService.verifyPassword(plainPassword, hashedPassword);
   }
 
-  // ✅ Generate Access Token (Short-lived)
+  
   static generateAccessToken(userId: number): string {
-    return JwtService.generateAccessToken(userId)
+    return JwtService.generateAccessToken(userId);
   }
 
-  // ✅ Generate Refresh Token (Long-lived)
   static generateRefreshToken(userId: number): string {
-    return JwtService.generateRefreshToken(userId)
+    return JwtService.generateRefreshToken(userId);
   }
 
-  // ✅ Verify Access Token
   static verifyToken(token: string): { userId: number } | null {
-    return JwtService.verifyToken(token)
+    return JwtService.verifyToken(token);
   }
 
-  // ✅ Verify Refresh Token
   static verifyRefreshToken(token: string): { userId: number } | null {
-    return JwtService.verifyRefreshToken(token)
+    return JwtService.verifyRefreshToken(token);
   }
 
   // ✅ Authenticate (Login)
-  static async authenticate(emailOrUsername: string, password: string) {
-    const user = await this.findByEmailOrUsername(emailOrUsername);
+  static async authenticate(email: string, password: string) {
+    const user = await this.findByEmail(email);
     if (!user) return null;
 
     const isValid = await this.verifyPassword(password, user.password);
     if (!isValid || !user.isActive) return null;
-
-    await db.update(users).set({ lastLogin: new Date() }).where(eq(users.id, user.id));
 
     const accessToken = this.generateAccessToken(user.id);
     const refreshToken = this.generateRefreshToken(user.id);
     const { password: _, ...userWithoutPassword } = user;
 
     return {
-      user: {...userWithoutPassword,role:"admin"},
+      user: { ...userWithoutPassword, role: 'admin' },
       accessToken,
       refreshToken,
     };
@@ -73,28 +69,13 @@ export class UserModel {
     return result[0] || null;
   }
 
-  static async findByUsername(username: string): Promise<User | null> {
-    const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
-    return result[0] || null;
-  }
-
-  static async findByEmailOrUsername(emailOrUsername: string): Promise<User | null> {
-    const result = await db.select().from(users).where(
-      or(
-        eq(users.email, emailOrUsername),
-        eq(users.username, emailOrUsername)
-      )
-    ).limit(1);
-    return result[0] || null;
-  }
-
   static async findById(id: number): Promise<User | null> {
     const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
     return result[0] || null;
   }
 
   // 🔄 Update user
-  static async update(id: number, updateData: Partial<Omit<NewUser, 'id'>>): Promise<User | null> {
+  static async update(id: number, updateData: Partial<NewUser>): Promise<User | null> {
     if (updateData.password) {
       updateData.password = await this.hashPassword(updateData.password);
     }
@@ -107,13 +88,12 @@ export class UserModel {
     return updatedUser || null;
   }
 
-  // ❌ Delete user (if needed later)
+  // ❌ Delete user (not implemented yet)
   static async delete(id: number): Promise<boolean> {
-    // Not implemented fully
     return false;
   }
 
-  // ✅ Toggle active status
+  // ✅ Toggle Active Status
   static async toggleActive(id: number): Promise<User | null> {
     const user = await this.findById(id);
     if (!user) return null;
@@ -124,19 +104,5 @@ export class UserModel {
       .returning();
 
     return updatedUser;
-  }
-
-  // ✅ Verify Email
-  static async verifyEmail(id: number): Promise<User | null> {
-    const [updatedUser] = await db.update(users)
-      .set({
-        isVerified: true,
-        verificationToken: null,
-        updatedAt: new Date()
-      })
-      .where(eq(users.id, id))
-      .returning();
-
-    return updatedUser || null;
   }
 }
