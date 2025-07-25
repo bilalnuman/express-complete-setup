@@ -1,12 +1,8 @@
 import { z } from 'zod';
-
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const registerSchema = z.object({
-    email: z.string().email(),
-    username: z.string()
-        .min(3, "Username too short")
-        .max(20, "Username too long")
-        .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
-    password: z.string()
+    email: z.string().regex(emailRegex, "Invalid email format"),
+    password: z.string("Password is required.")
         .min(8, "Password must be at least 8 characters long.")
         .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
         .regex(/[a-z]/, "Password must contain at least one lowercase letter")
@@ -28,7 +24,7 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-    emailOrUsername: z.string().nonempty("Email or Username is required."),
+    email: z.string().regex(emailRegex, "Invalid email format"),
     password: z.string().nonempty("Password is required."),
 });
 

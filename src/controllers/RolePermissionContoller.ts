@@ -34,7 +34,10 @@ class RolePermissionContoller {
       });
     } catch (error: any) {
       if (error.cause.code === '23505') {
-        return sendBadResponse(res, {}, `Permission "${req.body.name}" already exists`);
+        return sendBadResponse(res, {}, `Permission "${data.permissionId}" already exists`);
+      }
+      if (error.cause.code === '23503') {
+        return sendBadResponse(res, {}, `Permission "${data.permissionId}" not exists`);
       }
       console.error('Unhandled permission Create Error:', error);
       return sendBadResponse(res, {}, error?.cause);

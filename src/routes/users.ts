@@ -13,8 +13,11 @@ declare global {
     }
 }
 const router = Router();
-router.get('/profile', authenticateToken, UserController.getProfile);
-router.put('/profile', updateProfileRateLimit, authenticateToken, UserController.updateProfile);
-router.put('/update-picture', authenticateToken, createUploader(),UserController.updatePicture);
+router.use(authenticateToken)
+
+router.get('/', UserController.index);
+router.get('/profile', UserController.getProfile);
+router.put('/profile', updateProfileRateLimit, UserController.updateProfile);
+router.put('/update-picture', createUploader(), UserController.updatePicture);
 
 export default router;

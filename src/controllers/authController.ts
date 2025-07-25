@@ -11,7 +11,7 @@ export class AuthController {
   static register = asyncHandler(async (req: Request, res: Response) => {
     const data = validateSchema(registerSchema, req.body, res);
     if (!data) return;
-    const { email, username, password } = data;
+    const { email, password } = data;
 
     const existingUser =
       (await UserModel.findByEmail(email))
@@ -40,9 +40,9 @@ export class AuthController {
   static login = asyncHandler(async (req: Request, res: Response) => {
     const data = validateSchema(loginSchema, req.body, res);
     if (!data) return;
-    const { emailOrUsername, password } = data;
+    const { email, password } = data;
 
-    const authResult = await UserModel.authenticate(emailOrUsername, password);
+    const authResult = await UserModel.authenticate(email, password);
 
     if (!authResult) {
       return sendResponse({

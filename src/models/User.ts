@@ -6,7 +6,7 @@ import { users } from '../db/migrations/users';
 import { NewUser, User } from '../db/schema';
 
 export class UserModel {
-  
+
   static async hashPassword(password: string): Promise<string> {
     return await JwtService.hashPassword(password);
   }
@@ -15,7 +15,7 @@ export class UserModel {
     return await JwtService.verifyPassword(plainPassword, hashedPassword);
   }
 
-  
+
   static generateAccessToken(userId: number): string {
     return JwtService.generateAccessToken(userId);
   }
@@ -61,6 +61,11 @@ export class UserModel {
     }).returning();
 
     return newUser;
+  }
+
+  static async getAll(): Promise<User[]> {
+    const result = await db.select().from(users);
+    return result;
   }
 
   // 🔍 Finders

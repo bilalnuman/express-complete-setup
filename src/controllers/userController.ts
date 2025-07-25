@@ -6,15 +6,37 @@ import { StatusCodes } from 'http-status-codes';
 import { profileUpdateSchema } from '../validationSchemas/profileSchema';
 import { validateSchema } from '../helpers/validateSchema';
 import { uploadFiles } from './fileController';
-
+import { UserRoleModel } from '../models/UserRole';
 export class UserController {
+
+
+    static index = asyncHandler(async (req: Request, res: Response) => {
+        const users = await UserModel.getAll();
+        if (!users) {
+            return sendResponse({
+                res,
+                statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
+                success: false,
+                message: 'Failed to fetch users'
+            })
+        }
+        const usersWithoutPasswords = users.map(({ password, ...rest }) => rest);
+        return sendResponse({
+            res,
+            statusCode: StatusCodes.OK,
+            success: true,
+            message: 'Users fetched successfully',
+            data: { usersWithoutPasswords },
+        }
+        )
+    })
 
     static getProfile = asyncHandler(async (req: Request, res: Response) => {
         const userId = (req as any).userId;
-
+        const userRolesAndPermissions = await UserRoleModel.getUserRolesAndPermissions(userId)
         const user = await UserModel.findById(userId);
 
-        if (!user) {
+        if (!user || !userRolesAndPermissions) {
             return sendResponse({
                 res,
                 statusCode: StatusCodes.NOT_FOUND,
@@ -25,12 +47,13 @@ export class UserController {
 
         const { password: _, ...userWithoutPassword } = user;
 
+
         return sendResponse({
             res,
             statusCode: StatusCodes.OK,
             success: true,
             message: 'User profile fetched successfully',
-            data: { user: userWithoutPassword },
+            data: { user: { ...userWithoutPassword, meta: userRolesAndPermissions } },
         });
     });
 

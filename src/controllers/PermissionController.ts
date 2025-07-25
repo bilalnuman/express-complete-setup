@@ -6,7 +6,7 @@ import { sendResponse } from '../utils/apiResponse';
 import { StatusCodes } from 'http-status-codes';
 import { PermissionModel } from '../models/Permission';
 const permissionSchema = z.object({
-  name: z.enum(['create', 'read', 'update', 'delete'],"Valid permission type 'create', 'read', 'update', 'delete'"),
+  name: z.enum(['create', 'read', 'update', 'delete'], "Valid permission type 'create', 'read', 'update', 'delete'"),
   description: z.string().optional()
 });
 
@@ -52,7 +52,6 @@ class PermissionController {
     try {
 
       const permissionCreated = await PermissionModel.create({
-        ...data
       });
 
       return sendResponse({
@@ -64,7 +63,10 @@ class PermissionController {
       });
     } catch (error: any) {
       if (error.cause.code === '23505') {
-        return sendBadResponse(res, {}, `Permission "${req.body.name}" already exists`);
+        return sendBadResponse(res, {}, `Permission "${data.name}" already exists`);
+      }
+      if (error.cause.code === '23503') {
+        return sendBadResponse(res, {}, `Permission "${data.name}" note exists`);
       }
       console.error('Unhandled permission Create Error:', error);
       return sendBadResponse(res, {}, error?.cause);

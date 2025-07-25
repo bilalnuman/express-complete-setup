@@ -9,11 +9,11 @@ import ${controllerName} from '../controllers/${controllerName}';
 const router = express.Router();
 
 // Define route handlers
-router.get('/index', ${controllerName}.index);
-router.get('/show/:id', ${controllerName}.show);
+router.get('/', ${controllerName}.index);
+router.get('/:id', ${controllerName}.show);
 router.post('/create', ${controllerName}.create);
-router.put('/update/:id', ${controllerName}.update);
-router.delete('/delte/:id', ${controllerName}.delete);
+router.put('/:id', ${controllerName}.update);
+router.delete('/:id', ${controllerName}.delete);
 
 export default router;
   `;

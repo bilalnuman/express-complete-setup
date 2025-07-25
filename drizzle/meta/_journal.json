@@ -15,6 +15,27 @@
       "when": 1753310273986,
       "tag": "0001_unique_princess_powerful",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1753342117356,
+      "tag": "0002_woozy_metal_master",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1753349216603,
+      "tag": "0003_keen_junta",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1753369281779,
+      "tag": "0004_public_natasha_romanoff",
+      "breakpoints": true
     }
   ]
 }

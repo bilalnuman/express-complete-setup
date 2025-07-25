@@ -1,6 +1,10 @@
-// db/schema.ts
 export * from './migrations/users';
 export * from './migrations/roles';
 export * from './migrations/permissions';
 export * from './migrations/userRoles';
 export * from './migrations/rolePermissions';
+export * from './migrations/students';
+export * from './migrations/classes';
+export * from './migrations/studentCassEnrollments';
+export * from './migrations/studentDocuments';
+export * from './migrations/sections';

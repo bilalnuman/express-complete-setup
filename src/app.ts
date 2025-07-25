@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import { errorHandler } from './middlewares/errorHandler';
-import { authRoutes, permissionRoutes, rolePermission, roleRoutes, userRoutes } from './routes';
+import { authRoutes, classRoutes, permissionRoutes, rolePermission, roleRoutes, sectionRoutes, studentCassEnrollmentRoutes, studentDocumentsRoutes, studentRoutes, userRoleRoutes, userRoutes } from './routes';
 dotenv.config();
 
 const app = express();
@@ -61,6 +61,12 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/role', roleRoutes);
 app.use('/api/v1/permissions', permissionRoutes);
 app.use('/api/v1/role-prmission', rolePermission);
+app.use('/api/v1/user-role', userRoleRoutes);
+app.use('/api/v1/students', studentRoutes);
+app.use('/api/v1/classes', classRoutes);
+app.use('/api/v1/sections', sectionRoutes);
+app.use('/api/v1/enrollments', studentCassEnrollmentRoutes);
+app.use('/api/v1/upload-documents', studentDocumentsRoutes);
 
 
 // If no route match then this action will be execute
